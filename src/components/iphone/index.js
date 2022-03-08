@@ -7,6 +7,8 @@ import style_iphone from '../button/style_iphone';
 import $ from 'jquery';
 // import the Button component
 import Button from '../button';
+import ReactPropTypes from 'proptypes';
+
 
 export default class Iphone extends Component {
     //var Iphone = React.createClass({
@@ -17,7 +19,7 @@ export default class Iphone extends Component {
 		// temperature state
 		this.state.temp = "";
 		// button display state
-		this.setState({ display: true });
+		this.setState({ display: true});
 	}
 
 	// a call to fetch weather data via wunderground
@@ -31,9 +33,15 @@ export default class Iphone extends Component {
 			error : function(req, err){ console.log('API call failed ' + err); }
 		})
 		// once the data grabbed, hide the button
-		this.setState({ display: false });
+		this.setState({ display: false});
 	}
 
+	renderBuddy() {
+		return (
+			<Buddy className='buddyinfo'/> 
+		);
+	}
+     
 	// the main render method for the iphone component
 	render() {
 		// check if temperature data is fetched, if so add the sign styling to the page
@@ -43,6 +51,7 @@ export default class Iphone extends Component {
 		return (
 			<div class={ style.container }>
 				<div class={ style.header }>
+				    <div>{this.state.temp != 0  ? this.renderBuddy() : null }</div>
 					<div class={ style.city }>{ this.state.locate }</div>
 					<div class={ style.conditions }>{ this.state.cond }</div>
 					<span class={ tempStyles }>{ this.state.temp }</span>
@@ -56,15 +65,48 @@ export default class Iphone extends Component {
 	}
 
 	parseResponse = (parsed_json) => {
-		var location = parsed_json['weather']['0']['main'];
+		var location = parsed_json['name'];
 		var temp_c = parsed_json['main']['temp'];
 		var conditions = parsed_json['weather']['0']['description'];
-
+		var wind = parsed_json['wind']['speed']
+        var b_info = ['hi', 'bye', 'why']
 		// set states for fields so they could be rendered later on
 		this.setState({
 			locate: location,
 			temp: temp_c,
-			cond : conditions
-		});      
+			cond : conditions,
+			w_speed: wind,
+			buddyInfo: b_info
+		});     
+		console.log("ParentClass: " + this.state.buddyInfo) 
+	}
+	
+
+	
+}
+
+class Buddy extends Component {
+	constructor(props) 
+	{
+		super(props);
+		this.state = {
+			info: ["hi", "bye", "why"]
+		}
+		console.log("BuddyClass: " + this.state.info)
+	}
+
+	render () 
+	{
+		return (			
+			<button onClick={() => this.moreInfo()}>{this.state.info[0]}</button>
+		)
+	}
+
+	moreInfo() 
+	{ 
+		var array = this.state.info.slice(1)
+		array.push(this.state.info[0])
+		this.setState({info: array})	
 	}
 }
+
