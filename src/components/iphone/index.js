@@ -38,7 +38,7 @@ export default class Iphone extends Component {
 
 	renderBuddy() {
 		return (
-			<Buddy className='buddyinfo'/> 
+			<Buddy className='buddyinfo' buddyInfo={this.state.buddyInfo}/> 
 		);
 	}
      
@@ -68,8 +68,35 @@ export default class Iphone extends Component {
 		var location = parsed_json['name'];
 		var temp_c = parsed_json['main']['temp'];
 		var conditions = parsed_json['weather']['0']['description'];
-		var wind = parsed_json['wind']['speed']
-        var b_info = ['hi', 'bye', 'why']
+		var wind = parsed_json['wind']['speed'];
+        var b_info = [];
+        
+		if (temp_c > 25)
+		{
+			b_info.push("Hot one out today, drop the coat and maybe grab some sunscreen!");
+		}
+		if (temp_c < 10)
+		{
+			b_info.push("Brrrr, it is chilly out today. Maybe pop a coat and scarf on!")
+		}
+		switch (conditions)
+		{
+			case "snow":
+				b_info.push("Time to make a snowman! Look like its snowing out today, wrap up warm and watch out for ice");
+				break;
+			case "rain" || "shower rain":
+				b_info.push("Its raining its pouring! Get yourself a coat or umbrella unless you wanna get soaked");
+				break;
+			case "mist":
+				b_info.push("Looks like the Ameno-sagiri got active in the TV again, lets hope those kids know whats going on!");
+				break;
+		}
+		if (b_info.length == 0)
+		{
+			b_info.push("Looks like the weather is acting fairly normal today, have a great day!");
+		}
+
+
 		// set states for fields so they could be rendered later on
 		this.setState({
 			locate: location,
@@ -78,7 +105,6 @@ export default class Iphone extends Component {
 			w_speed: wind,
 			buddyInfo: b_info
 		});     
-		console.log("ParentClass: " + this.state.buddyInfo) 
 	}
 	
 
@@ -90,9 +116,8 @@ class Buddy extends Component {
 	{
 		super(props);
 		this.state = {
-			info: ["hi", "bye", "why"]
+			info: this.props.buddyInfo
 		}
-		console.log("BuddyClass: " + this.state.info)
 	}
 
 	render () 
