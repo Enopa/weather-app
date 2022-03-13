@@ -32,8 +32,11 @@ export default class Iphone extends Component {
 			success : this.parseResponse,
 			error : function(req, err){ console.log('API call failed ' + err); }
 		})
+
 		// once the data grabbed, hide the button
 		this.setState({ display: false});
+
+		
 	}
 
 	renderBuddy() {
@@ -46,15 +49,25 @@ export default class Iphone extends Component {
 	render() {
 		// check if temperature data is fetched, if so add the sign styling to the page
 		const tempStyles = this.state.temp ? `${style.temperature} ${style.filled}` : style.temperature;
+		const d = new Date();
+		var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+		const date = d.toLocaleDateString("en-US", options);
 		
 		// display all weather data
 		return (
 			<div class={ style.container }>
 				<div class={ style.header }>
+				    {this.state.display ? null : <img src="buddy.png" alt="Square Smiley Face" width="100"/>}
 				    <div>{this.state.temp != 0  ? this.renderBuddy() : null }</div>
+					{this.state.display ? null : <img src={this.state.imageIcon} alt="Icon" width="80"/>}
+					<div class={style.date}>{this.state.display ? null : date}</div>
 					<div class={ style.city }>{ this.state.locate }</div>
 					<div class={ style.conditions }>{ this.state.cond }</div>
 					<span class={ tempStyles }>{ this.state.temp }</span>
+					{this.state.display ? null : <img src="circle.png" alt="Icon" width="225"/>}
+					<div class={ style.condiions }>{ this.state.display ? null : this.state.cloudy + "%"}</div>
+					{this.state.display ? null : <img src="rainDrop.png" alt="Rain Drop Icon" width="25"/>}
+					
 				</div>
 				<div class={ style.details }></div>
 				<div class= { style_iphone.container }> 
@@ -69,8 +82,12 @@ export default class Iphone extends Component {
 		var temp_c = parsed_json['main']['temp'];
 		var conditions = parsed_json['weather']['0']['description'];
 		var wind = parsed_json['wind']['speed'];
-        var b_info = [];
+		var clouds = parsed_json['clouds']['all'];
+		var icon = parsed_json['weather']['0']['icon'];
         
+        
+		//Checking certain information to display for the buddy info
+		var b_info = [];
 		if (temp_c > 25)
 		{
 			b_info.push("Hot one out today, drop the coat and maybe grab some sunscreen!");
@@ -84,26 +101,30 @@ export default class Iphone extends Component {
 			case "snow":
 				b_info.push("Time to make a snowman! Look like its snowing out today, wrap up warm and watch out for ice");
 				break;
-			case "rain" || "shower rain":
-				b_info.push("Its raining its pouring! Get yourself a coat or umbrella unless you wanna get soaked");
-				break;
 			case "mist":
-				b_info.push("Looks like the Ameno-sagiri got active in the TV again, lets hope those kids know whats going on!");
+				b_info.push("It's misty out today, stay extra vigilint");
 				break;
 		}
+        
+
+		if (conditions.includes("rain"))
+		{
+			b_info.push("Looks like its raining, time to grab an umbrella!")
+		}
+
 		if (b_info.length == 0)
 		{
 			b_info.push("Looks like the weather is acting fairly normal today, have a great day!");
 		}
-
-
 		// set states for fields so they could be rendered later on
 		this.setState({
 			locate: location,
 			temp: temp_c,
 			cond : conditions,
 			w_speed: wind,
-			buddyInfo: b_info
+			buddyInfo: b_info,
+			cloudy: clouds,
+			imageIcon: "http://openweathermap.org/img/wn/" + icon + "@2x.png"
 		});     
 	}
 	
@@ -111,6 +132,7 @@ export default class Iphone extends Component {
 	
 }
 
+//Buddy component, button that displays a parent state array. 
 class Buddy extends Component {
 	constructor(props) 
 	{
