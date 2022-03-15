@@ -8,6 +8,8 @@ import $ from 'jquery';
 // import the Button component
 import Button from '../button';
 import ReactPropTypes from 'proptypes';
+import { CircularProgressbar } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
 
 
 export default class Iphone extends Component {
@@ -25,7 +27,7 @@ export default class Iphone extends Component {
 	// a call to fetch weather data via wunderground
 	fetchWeatherData = () => {
 		// API URL with a structure of : ttp://api.wunderground.com/api/key/feature/q/country-code/city.json
-		var url = "http://api.openweathermap.org/data/2.5/weather?q=London&units=metric&APPID=477fb4cf822217d9f24260aa91ebb19b";
+		var url = "http://api.openweathermap.org/data/2.5/weather?q=Dubai&units=metric&APPID=477fb4cf822217d9f24260aa91ebb19b";
 		$.ajax({
 			url: url,
 			dataType: "jsonp",
@@ -52,7 +54,8 @@ export default class Iphone extends Component {
 		const d = new Date();
 		var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
 		const date = d.toLocaleDateString("en-US", options);
-		
+		const percentage = (this.state.temp / 35) * 100;
+
 		// display all weather data
 		return (
 			<div class={ style.container }>
@@ -63,10 +66,10 @@ export default class Iphone extends Component {
 					<div class={style.date}>{this.state.display ? null : date}</div>
 					<div class={ style.city }>{ this.state.locate }</div>
 					<div class={ style.conditions }>{ this.state.cond }</div>
-					<span class={ tempStyles }>{ this.state.temp }</span>
-					{this.state.display ? null : <img src="circle.png" alt="Icon" width="225"/>}
+					{this.state.display ? null : <div style={{width: 250}}><CircularProgressbar value={percentage} text={`${this.state.temp + '°'}`} /> </div> };
 					<div class={ style.condiions }>{ this.state.display ? null : this.state.cloudy + "%"}</div>
 					{this.state.display ? null : <img src="rainDrop.png" alt="Rain Drop Icon" width="25"/>}
+					
 					
 				</div>
 				<div class={ style.details }></div>
