@@ -4,7 +4,8 @@
 	display: flex;
 	flex-direction: column;
 	//background-image: url('../../assets/backgrounds/clear-iphone.jpg');
-	background-color: burlywood;
+	//background-color: burlywood;
+	background:linear-gradient(0deg, #FF7935 0%, #FF7935 15%, #FFB580 21%, #FFB580 78%, #FF7935 85%, #FF7935 100%);
 	color: #fff;
 	width: 414px;
 	height: 736px;
@@ -28,13 +29,15 @@
 .conditions {
 	flex: 1;
 	font-size: 1em;
+	padding-bottom: 5rem;
 }
 .temperature {
 	flex: 2;
 	margin-top: 0;
-	font-size: 4.8em;
+	font-size: 4.3em;
 	font-weight: 300;
-	letter-spacing: -12px;
+	letter-spacing: -5px;
+	margin-top: 5%;
 }
 .filled:after {
 	content: "°";
@@ -44,4 +47,56 @@
 	display: inline-block;
 	padding-top: 10px;
 	vertical-align: top;
+}
+
+.icon{
+	width: 30%;
+	height: auto;
+	margin-bottom: 2rem;
+	margin-left: 3rem;
+}
+
+.circle{
+	margin: -10rem 0 0 6rem;
+	margin-top: -3.3em;
+	width: 58%;
+	height: auto;
+	margin-left: 5.5em;
+}
+
+.drop{
+	margin: 0 0 0 12rem;
+	margin-top: -1.5rem;
+}
+
+.percent{
+	margin-top: 2rem;
+	margin-left: 3rem;
+}
+
+.date{
+	margin-top: -8rem;
+}
+
+.date,.city,.conditions{
+	margin-left: 8rem;
+}
+
+.buddypic{
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	margin-left: 3rem;
+	margin-top: 1rem;
+}
+
+.container{
+	position: relative;
+}
+
+.buddy{
+	width: 50%;
+	margin-left: 10rem;
+	margin-top: -10%;
+	margin-bottom: 3rem;
 }
