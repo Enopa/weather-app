@@ -69,7 +69,7 @@ export default class Iphone extends Component {
 					{this.state.display ? null : <div class={style.circle} style={{width: 250}}><CircularProgressbar styles={buildStyles({pathColor: this.state.tempColor, textColor:'#252525'})} value={percentage} text={`${this.state.temp + '°'}`}/></div>}
 					<div class={ style.percent }>{ this.state.display ? null : this.state.cloudy + "%"}</div>
 					{this.state.display ? null : <img class={style.drop} src="rainDrop.png" alt="Rain Drop Icon" width="25"/>}
-					
+					<canvas id='Canvas' class={style.Canvas}></canvas>
 					
 				</div>
 				<div class={ style.details }></div>
@@ -82,46 +82,61 @@ export default class Iphone extends Component {
 
 	parseResponse = (parsed_json) => {
 		var location = parsed_json['name'];
-		var temp_c = Math.round(parsed_json['main']['temp']);
+		var temp_c = parsed_json['main']['temp'];
 		var conditions = parsed_json['weather']['0']['description'];
 		var wind = parsed_json['wind']['speed'];
 		var clouds = parsed_json['clouds']['all'];
 		var icon = parsed_json['weather']['0']['icon'];
-		var barColour = "#375f00";
-        
+
+
+		const canvas = document.getElementById('Canvas')
+
+		console.log(canvas)
+		const ctx = canvas.getContext('2d')
+		
+		canvas.height = innerHeight
+		canvas.width = innerWidth
+
+		console.log(innerHeight, innerWidth)
+		let increment = 0
+
+		let waveColour = [temp_c*6.375];
+
+		
         
 		//Checking certain information to display for the buddy info
 		var b_info = [];
 		if (temp_c > 25)
 		{
 			b_info.push("Hot one out today, drop the coat and maybe grab some sunscreen!");
-			barColour = '#FF0000';
 		}
 		if (temp_c < 10)
 		{
 			b_info.push("Brrrr, it is chilly out today. Maybe pop a coat and scarf on!")
-			barColour = '#0000FF';
 		}
 		switch (conditions)
 		{
 			case "snow":
 				b_info.push("Time to make a snowman! Look like its snowing out today, wrap up warm and watch out for ice");
+				waveColour.push(128);
 				break;
 			case "mist":
 				b_info.push("It's misty out today, stay extra vigilint");
+				waveColour.push(74);
 				break;
 		}
         
 
 		if (conditions.includes("rain"))
 		{
-			b_info.push("Looks like its raining, time to grab an umbrella!");
-
+			b_info.push("Looks like its raining, time to grab an umbrella!")
+			waveColour.push(255);
 		}
 
 		if (b_info.length == 0)
 		{
-			b_info.push("Looks like the weather is acting fairly normal today, have a great day!");	
+			b_info.push("Looks like the weather is acting fairly normal today, have a great day!");
+			waveColour.push(30);
 		}
 		// set states for fields so they could be rendered later on
 		this.setState({
@@ -131,9 +146,38 @@ export default class Iphone extends Component {
 			w_speed: wind,
 			buddyInfo: b_info,
 			cloudy: clouds,
-			imageIcon: "http://openweathermap.org/img/wn/" + icon + "@2x.png",
-			tempColor: barColour
-		});     
+			imageIcon: "http://openweathermap.org/img/wn/" + icon + "@2x.png"
+		});    
+
+		waveColour.push((waveColour[0]+waveColour[1])/2);
+
+		console.log(waveColour)
+
+		console.log(innerWidth)
+		
+		function animate()  { 
+			ctx.beginPath()
+			ctx.moveTo(0, innerHeight)
+			ctx.clearRect(0,0,innerWidth, innerHeight)
+			ctx.fillRect(0,innerHeight*0.75,innerWidth, innerHeight)
+
+			for (let i = 0; i < innerWidth; i++) {
+				let wave1 = Math.sin(i * 0.01 - increment)
+      			let wave2 = Math.sin(i * 0.02 - increment)
+      			let wave3 = Math.sin(i * 0.015 - increment)
+
+    			ctx.lineTo(i * 2.5, innerHeight - 400 + wave1 * wave2 * wave3 * 200)
+			}
+				 
+			ctx.lineWidth = 10
+			increment += 0.01
+			ctx.fillStyle = `rgb(${waveColour[0]}, ${waveColour[1]}, ${waveColour[2]})`;
+			ctx.fill()
+			ctx.closePath()
+			requestAnimationFrame(animate)
+		}
+
+		animate()	
 	}
 	
 
