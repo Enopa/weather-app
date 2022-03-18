@@ -8,7 +8,7 @@ import $ from 'jquery';
 // import the Button component
 import Button from '../button';
 import ReactPropTypes from 'proptypes';
-import { CircularProgressbar } from 'react-circular-progressbar';
+import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 
 
@@ -27,7 +27,7 @@ export default class Iphone extends Component {
 	// a call to fetch weather data via wunderground
 	fetchWeatherData = () => {
 		// API URL with a structure of : ttp://api.wunderground.com/api/key/feature/q/country-code/city.json
-		var url = "http://api.openweathermap.org/data/2.5/weather?q=London&units=metric&APPID=477fb4cf822217d9f24260aa91ebb19b";
+		var url = "http://api.openweathermap.org/data/2.5/weather?q=Moscow&units=metric&APPID=477fb4cf822217d9f24260aa91ebb19b";
 		$.ajax({
 			url: url,
 			dataType: "jsonp",
@@ -66,7 +66,7 @@ export default class Iphone extends Component {
 					<div class={style.date}>{this.state.display ? null : date}</div>
 					<div class={ style.city }>{ this.state.locate }</div>
 					<div class={ style.conditions }>{ this.state.cond }</div>
-					{this.state.display ? null : <div class={style.circle} style={{width: 250}}><CircularProgressbar value={percentage} text={`${this.state.temp + '°'}`}/></div>}
+					{this.state.display ? null : <div class={style.circle} style={{width: 250}}><CircularProgressbar styles={buildStyles({pathColor: this.state.tempColor, textColor:'#252525'})} value={percentage} text={`${this.state.temp + '°'}`}/></div>}
 					<div class={ style.percent }>{ this.state.display ? null : this.state.cloudy + "%"}</div>
 					{this.state.display ? null : <img class={style.drop} src="rainDrop.png" alt="Rain Drop Icon" width="25"/>}
 					
@@ -82,11 +82,12 @@ export default class Iphone extends Component {
 
 	parseResponse = (parsed_json) => {
 		var location = parsed_json['name'];
-		var temp_c = parsed_json['main']['temp'];
+		var temp_c = Math.round(parsed_json['main']['temp']);
 		var conditions = parsed_json['weather']['0']['description'];
 		var wind = parsed_json['wind']['speed'];
 		var clouds = parsed_json['clouds']['all'];
 		var icon = parsed_json['weather']['0']['icon'];
+		var barColour = "#375f00";
         
         
 		//Checking certain information to display for the buddy info
@@ -94,10 +95,12 @@ export default class Iphone extends Component {
 		if (temp_c > 25)
 		{
 			b_info.push("Hot one out today, drop the coat and maybe grab some sunscreen!");
+			barColour = '#FF0000';
 		}
 		if (temp_c < 10)
 		{
 			b_info.push("Brrrr, it is chilly out today. Maybe pop a coat and scarf on!")
+			barColour = '#0000FF';
 		}
 		switch (conditions)
 		{
@@ -112,12 +115,13 @@ export default class Iphone extends Component {
 
 		if (conditions.includes("rain"))
 		{
-			b_info.push("Looks like its raining, time to grab an umbrella!")
+			b_info.push("Looks like its raining, time to grab an umbrella!");
+
 		}
 
 		if (b_info.length == 0)
 		{
-			b_info.push("Looks like the weather is acting fairly normal today, have a great day!");
+			b_info.push("Looks like the weather is acting fairly normal today, have a great day!");	
 		}
 		// set states for fields so they could be rendered later on
 		this.setState({
@@ -127,7 +131,8 @@ export default class Iphone extends Component {
 			w_speed: wind,
 			buddyInfo: b_info,
 			cloudy: clouds,
-			imageIcon: "http://openweathermap.org/img/wn/" + icon + "@2x.png"
+			imageIcon: "http://openweathermap.org/img/wn/" + icon + "@2x.png",
+			tempColor: barColour
 		});     
 	}
 	
@@ -148,7 +153,7 @@ class Buddy extends Component {
 	render () 
 	{
 		return (			
-			<button onClick={() => this.moreInfo()}>{this.state.info[0]}</button>
+			<button class={style.buddyButton} onClick={() => this.moreInfo()}>{this.state.info[0]}</button>
 		)
 	}
 
