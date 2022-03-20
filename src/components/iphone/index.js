@@ -25,19 +25,32 @@ export default class Iphone extends Component {
 	}
 
 	// a call to fetch weather data via wunderground
-	fetchWeatherData = () => {
+	fetchWeatherData = (location) => {
 		// API URL with a structure of : ttp://api.wunderground.com/api/key/feature/q/country-code/city.json
-		var url = "http://api.openweathermap.org/data/2.5/weather?q=Moscow&units=metric&APPID=477fb4cf822217d9f24260aa91ebb19b";
+		var url = "http://api.openweathermap.org/data/2.5/weather?q=" + location + "&units=metric&APPID=477fb4cf822217d9f24260aa91ebb19b";
 		$.ajax({
 			url: url,
 			dataType: "jsonp",
 			success : this.parseResponse,
-			error : function(req, err){ console.log('API call failed ' + err); }
+			error : function(req, err){ console.log('API call failed ' + err); alert("Not a valid city");}
 		})
 
 		// once the data grabbed, hide the button
-		this.setState({ display: false});
+		
 
+		
+	}
+
+	buttonList() 
+	{
+		return(
+	     <div>
+			Please enter a city:
+			<input id="city" type="text">London</input>
+			<button onClick={() => this.fetchWeatherData(document.getElementById("city").value)}> Display Weather</button>
+		</div>
+		);
+		
 		
 	}
 
@@ -64,18 +77,21 @@ export default class Iphone extends Component {
 				    <div class={style.buddy}>{this.state.temp != 0  ? this.renderBuddy() : null }</div>
 					{this.state.display ? null : <img class={style.icon} src={this.state.imageIcon} alt="Icon" width="80"/>}
 					<div class={style.date}>{this.state.display ? null : date}</div>
-					<div class={ style.city }>{ this.state.locate }</div>
+					 
+					
+					{this.state.display ? null : <div class={ style.city }><p>{ this.state.locate }</p> <button onClick={() => location.reload()}>SWITCH</button></div>}
 					<div class={ style.conditions }>{ this.state.cond }</div>
+
+
 					{this.state.display ? null : <div class={style.circle} style={{width: 250}}><CircularProgressbar styles={buildStyles({pathColor: this.state.tempColor, textColor:'#252525'})} value={percentage} text={`${this.state.temp + '°'}`}/></div>}
 					<div class={ style.percent }>{ this.state.display ? null : this.state.cloudy + "%"}</div>
 					{this.state.display ? null : <img class={style.drop} src="rainDrop.png" alt="Rain Drop Icon" width="25"/>}
-					
-					
 				</div>
-				<div class={ style.details }></div>
-				<div class= { style_iphone.container }> 
-					{ this.state.display ? <Button class={ style_iphone.button } clickFunction={ this.fetchWeatherData }/ > : null }
+
+				<div> 
+					{ this.state.display ? this.buttonList()  : null }
 				</div>
+				
 			</div>
 		);
 	}
@@ -133,7 +149,8 @@ export default class Iphone extends Component {
 			cloudy: clouds,
 			imageIcon: "http://openweathermap.org/img/wn/" + icon + "@2x.png",
 			tempColor: barColour
-		});     
+		});   
+		this.setState({ display: false});  
 	}
 	
 
@@ -164,4 +181,3 @@ class Buddy extends Component {
 		this.setState({info: array})	
 	}
 }
-
