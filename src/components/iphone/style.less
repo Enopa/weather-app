@@ -17,6 +17,8 @@
 	display: flex;
 	flex-direction: column;
 	flex: 1;
+	max-height: 100%;
+	max-width: 100%;
 }
 .details {
 	flex: 4;
@@ -94,13 +96,22 @@
 	position: relative;
 }
 
+
+
 .buddy{
 
 	width: 58%;
 	margin-left: 10rem;
 	margin-top: -13%;
 	margin-bottom: 2rem;
-		
+}
+
+.menu {
+	display: static;	
+	left: 0;
+	top: 0;
+	width: 20%;
+	position: top-left;
 }
 
 .buddyButton{
@@ -122,4 +133,11 @@
 
 .Canvas {
 	height: 165px;
+}
+
+.menu {
+	display: flex;
+	position: static;
+	left: 0;
+	top: 0;
 }
