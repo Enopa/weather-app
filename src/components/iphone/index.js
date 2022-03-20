@@ -41,13 +41,14 @@ export default class Iphone extends Component {
 		
 	}
 
-	buttonList() 
+	inputDisplay() 
 	{
 		return(
-	     <div>
-			Please enter a city:
-			<input id="city" type="text">London</input>
-			<button onClick={() => this.fetchWeatherData(document.getElementById("city").value)}> Display Weather</button>
+	     <div class={style.inputDisplay}>
+			<p><strong>Please enter a city:</strong></p>
+			<input class={style.inputBox} id="city" type="text" size="20"/>
+			<br></br>
+			<button class={style.submitButton} onClick={() => this.fetchWeatherData(document.getElementById("city").value)}> Display Weather</button>
 		</div>
 		);
 		
@@ -79,17 +80,20 @@ export default class Iphone extends Component {
 					<div class={style.date}>{this.state.display ? null : date}</div>
 					 
 					
-					{this.state.display ? null : <div class={ style.city }><p>{ this.state.locate }</p> <button onClick={() => location.reload()}>SWITCH</button></div>}
+					{this.state.display ? null : <div class={ style.city }> { this.state.locate }</div>}
+					{this.state.display ? null : <button class={style.switchButton} onClick={() => location.reload()}>Switch Location</button>}
 					<div class={ style.conditions }>{ this.state.cond }</div>
 
 
 					{this.state.display ? null : <div class={style.circle} style={{width: 250}}><CircularProgressbar styles={buildStyles({pathColor: this.state.tempColor, textColor:'#252525'})} value={percentage} text={`${this.state.temp + '°'}`}/></div>}
 					<div class={ style.percent }>{ this.state.display ? null : this.state.cloudy + "%"}</div>
 					{this.state.display ? null : <img class={style.drop} src="rainDrop.png" alt="Rain Drop Icon" width="25"/>}
+					{this.state.display ? null : <p class={style.windSpeed}>Wind Speed: {Math.round(this.state.w_speed)}mps</p>}
+				    <canvas id='Canvas' class={style.Canvas}></canvas>
 				</div>
 
 				<div> 
-					{ this.state.display ? this.buttonList()  : null }
+					{ this.state.display ? this.inputDisplay()  : null }
 				</div>
 				
 			</div>
@@ -104,6 +108,13 @@ export default class Iphone extends Component {
 		var clouds = parsed_json['clouds']['all'];
 		var icon = parsed_json['weather']['0']['icon'];
 		var barColour = "#375f00";
+
+		const canvas = document.getElementById('Canvas')
+		const ctx = canvas.getContext('2d')
+		canvas.height = innerHeight
+		canvas.width = innerWidth
+		let increment = 0
+		let waveColour = [temp_c*6.375];
         
         
 		//Checking certain information to display for the buddy info
@@ -117,14 +128,17 @@ export default class Iphone extends Component {
 		{
 			b_info.push("Brrrr, it is chilly out today. Maybe pop a coat and scarf on!")
 			barColour = '#0000FF';
+			
 		}
 		switch (conditions)
 		{
 			case "snow":
 				b_info.push("Time to make a snowman! Look like its snowing out today, wrap up warm and watch out for ice");
+				waveColour.push(128);
 				break;
 			case "mist":
 				b_info.push("It's misty out today, stay extra vigilint");
+				waveColour.push(74);
 				break;
 		}
         
@@ -132,13 +146,16 @@ export default class Iphone extends Component {
 		if (conditions.includes("rain"))
 		{
 			b_info.push("Looks like its raining, time to grab an umbrella!");
+			waveColour.push(255);
 
 		}
 
 		if (b_info.length == 0)
 		{
 			b_info.push("Looks like the weather is acting fairly normal today, have a great day!");	
+			waveColour.push(30);
 		}
+
 		// set states for fields so they could be rendered later on
 		this.setState({
 			locate: location,
@@ -148,9 +165,36 @@ export default class Iphone extends Component {
 			buddyInfo: b_info,
 			cloudy: clouds,
 			imageIcon: "http://openweathermap.org/img/wn/" + icon + "@2x.png",
-			tempColor: barColour
+			tempColor: barColour,
+			display: false
 		});   
-		this.setState({ display: false});  
+
+		waveColour.push((waveColour[0]+waveColour[1])/2);
+
+		function animate()  { 
+			ctx.beginPath()
+			ctx.moveTo(0, innerHeight)
+			ctx.clearRect(0,0,innerWidth, innerHeight)
+			ctx.fillRect(0,innerHeight*0.75,innerWidth, innerHeight)
+
+			for (let i = 0; i < innerWidth; i++) {
+				let wave1 = Math.sin(i * 0.01 - increment)
+      			let wave2 = Math.sin(i * 0.02 - increment)
+      			let wave3 = Math.sin(i * 0.015 - increment)
+
+    			ctx.lineTo(i * 2.5, innerHeight - 400 + wave1 * wave2 * wave3 * 200)
+			}
+				 
+			ctx.lineWidth = 10
+			increment += 0.01 * wind
+			ctx.fillStyle = `rgb(${waveColour[0]}, ${waveColour[1]}, ${waveColour[2]})`;
+			ctx.fill()
+			ctx.closePath()
+			requestAnimationFrame(animate)
+		}
+
+		animate()	
+
 	}
 	
 
