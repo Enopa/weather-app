@@ -27,7 +27,7 @@ export default class Iphone extends Component {
 	// a call to fetch weather data via wunderground
 	fetchWeatherData = (location) => {
 		// API URL with a structure of : ttp://api.wunderground.com/api/key/feature/q/country-code/city.json
-		var url = "http://api.openweathermap.org/data/2.5/weather?q=" + location + "&units=metric&APPID=3ade289044e1debf629af13a4c323f84";
+		var url = "http://api.openweathermap.org/data/2.5/weather?q=" + location + "&units=metric&APPID=477fb4cf822217d9f24260aa91ebb19b";
 		$.ajax({
 			url: url,
 			dataType: "jsonp",
@@ -45,8 +45,7 @@ export default class Iphone extends Component {
 	{
 		return(
 	     <div class={style.inputDisplay}>
-			<p><strong>Please enter a city with it's Country Code:</strong></p>
-			<p>e.g. London, GB</p>
+			<p><strong>Please enter a city:</strong></p>
 			<input class={style.inputBox} id="city" type="text" size="20"/>
 			<br></br>
 			<button class={style.submitButton} onClick={() => this.fetchWeatherData(document.getElementById("city").value)}> Display Weather</button>
@@ -89,8 +88,7 @@ export default class Iphone extends Component {
 					{this.state.display ? null : <div class={style.circle} style={{width: 250}}><CircularProgressbar styles={buildStyles({pathColor: this.state.tempColor, textColor:'#252525'})} value={percentage} text={`${this.state.temp + '°'}`}/></div>}
 					<div class={ style.percent }>{ this.state.display ? null : this.state.cloudy + "%"}</div>
 					{this.state.display ? null : <img class={style.drop} src="rainDrop.png" alt="Rain Drop Icon" width="25"/>}
-					{this.state.display ? null : <img class={style.windSpeed} src="windSpeed.png" alt="Wind Speed Icon" width="25"/>}
-					{this.state.display ? null : <p class={style.Speed}>Wind Speed: {Math.round(this.state.w_speed)}mps</p>}
+					{this.state.display ? null : <p class={style.windSpeed}>Wind Speed: {Math.round(this.state.w_speed)}mps</p>}
 				    <canvas id='Canvas' class={style.Canvas}></canvas>
 				</div>
 
