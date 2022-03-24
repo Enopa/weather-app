@@ -21,7 +21,7 @@ export default class Iphone extends Component {
 		// temperature state
 		this.state.temp = "";
 		// button display state
-		this.setState({ display: true});
+		this.setState({ display: true, help: false});
 	}
 
 	// a call to fetch weather data via wunderground
@@ -42,17 +42,34 @@ export default class Iphone extends Component {
 	//An input field as well as instructions so it is clear what the user must enter
 	inputDisplay() 
 	{
+		if(this.state.help)
+		{
+			return(
+				<div class={style.helpPage}>
+					
+					<button class={style.manualPage} onClick={() => this.infoToggle()}><img src="helpPage.jpg" alt="Manual Page" width="400"/></button>
+				</div>
+				
+			);
+		}
 		return(
+		
 	     <div class={style.inputDisplay}>
 			<p><strong>Please enter a city with it's Country Code:</strong></p>
 			<p>e.g. London, GB</p>
 			<input class={style.inputBox} id="city" type="text" size="20"/>
 			<br></br>
 			<button class={style.submitButton} onClick={() => this.fetchWeatherData(document.getElementById("city").value)}> Display Weather</button>
+			<button class={style.infoButton} onClick={() => this.infoToggle()}><img alt="Info Icon" src="infoIcon.png" width="50"/></button>
 		</div>
 		);
 		
 		
+	}
+
+	infoToggle()
+	{
+		this.setState({help: !this.state.help});
 	}
 
 	//Displays the custom buddy class
@@ -76,7 +93,9 @@ export default class Iphone extends Component {
 
 		// display all weather data
 		return (
+			
 			<div class={ style.container }>
+				
 				<div class={ style.header }>
 				    {this.state.display ? null : <img class={style.buddypic} src="buddy.png" alt="Square Smiley Face" width="100"/>}
 				    <div class={style.buddy}>{this.state.temp != 0  ? this.renderBuddy() : null }</div>
